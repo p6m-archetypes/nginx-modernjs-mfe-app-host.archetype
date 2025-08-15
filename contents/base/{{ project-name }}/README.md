@@ -1,110 +1,113 @@
 # {{ project-title }}
 
-A Modern.js micro frontend shell application built with TypeScript, designed to orchestrate and host multiple micro frontend applications.
+An nginx-based micro frontend host designed to serve and orchestrate multiple pre-built Modern.js micro frontend applications.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ and pnpm
 - Docker (for containerized deployment)
 
-### Development
+### Local Development
 
-Install dependencies and start the development server:
-
-```bash
-pnpm install
-pnpm dev
-```
-
-The application will be available at http://localhost:{{ port }}
-
-### Building
-
-Build the application for production:
+Build and run the Docker container:
 
 ```bash
-pnpm build
+# Build the image
+docker build -t {{ project-name }} .
+
+# Run the container
+docker run -p {{ port }}:{{ port }} {{ project-name }}
 ```
 
-### Linting and Formatting
+The application will be available at http://localhost:{{ port }}/apps/
 
-This project uses Biome for code quality and formatting:
+### Production Deployment
 
-```bash
-# Check for issues
-pnpm lint
-
-# Format code
-pnpm format
-```
+This host is designed to serve pre-built micro frontend applications. There's no build step required for the host itself.
 
 ## Micro Frontend Architecture
 
-This shell application uses Modern.js with Module Federation to dynamically load and orchestrate micro frontend applications.
+This nginx host serves static micro frontend applications with optimized CORS headers and caching for production use.
 
-### Registering Micro Frontends
+### Adding Micro Frontend Applications
 
-To register a new micro frontend, update `src/app.tsx`:
+To deploy a micro frontend to this host:
 
-```typescript
-import { createRoot } from '@modern-js/runtime';
+1. **Build your micro frontend**: 
+   ```bash
+   # In your Modern.js micro frontend project
+   pnpm build
+   ```
 
-// Register your micro frontends
-createRoot({
-  plugins: [/* your plugins */],
-  getAppList: () => [
-    {
-      name: 'your-app-name',
-      entry: 'http://localhost:3001',
-      activeWhen: '/your-route',
-    },
-  ],
-});
+2. **Copy to apps directory**:
+   ```bash
+   # Copy the dist output to the host
+   cp -r dist/ /path/to/host/{{ apps-dir }}/your-app-name/
+   ```
+
+3. **Access your application**:
+   - Your app will be available at: `http://host/{{ apps-dir }}/your-app-name/`
+
+### Directory Structure
+
+```
+{{ apps-dir }}/
+├── app1/           # First micro frontend
+│   ├── index.html
+│   ├── assets/
+│   └── ...
+├── app2/           # Second micro frontend  
+│   ├── index.html
+│   ├── assets/
+│   └── ...
+└── index.html      # Optional host landing page
 ```
 
-### Exposed Modules
+### CORS Configuration
 
-This shell exposes the following modules via Module Federation:
-- `./Shell` - Main shell component
-- `./Layout` - Layout component
-- `./Router` - Routing configuration
+The nginx configuration includes CORS headers to support:
+- Cross-origin requests between micro frontends
+- Module Federation remote loading
+- Dynamic asset loading
 
-### Consuming from Other Apps
+### Nginx Configuration
 
-Other micro frontends can consume this shell's modules:
-
-```typescript
-// In your micro frontend's modern.config.ts
-export default defineConfig({
-  runtime: {
-    remotes: {
-      shell: 'http://localhost:{{ port }}/remoteEntry.js',
-    },
-  },
-});
-
-// Use in your components
-import { Layout } from 'shell/Layout';
-```
-
-### Naming Limitations
-
-Module Federation requires valid JavaScript identifiers for module names. Names cannot contain hyphens - use underscores or camelCase instead.
+The included `nginx.conf` provides:
+- Static file serving with proper MIME types
+- CORS headers for micro frontend communication
+- Optimized caching for static assets
+- Fallback routing for single-page applications
 
 ## Docker Deployment
 
-Build and run with Docker:
+The multi-stage Dockerfile builds a lightweight nginx container:
 
 ```bash
 # Build image
 docker build -t {{ project-name }} .
 
-# Run container
+# Run container  
 docker run -p {{ port }}:{{ port }} {{ project-name }}
 ```
 
-## Quick Demo
+The container:
+- Uses `nginx:alpine` for minimal size
+- Copies apps directory to `/usr/share/nginx/html/{{ apps-dir }}/`
+- Configures nginx with custom `nginx.conf`
+- Exposes port {{ port }}
 
-For a complete MFE demo with sample applications, see the `create_mfe_demo.sh` script in the archetype repository.
+## Kubernetes Deployment
+
+Deploy to Kubernetes using the included manifests:
+
+```bash
+# Apply the Kubernetes configuration
+kubectl apply -f .platform/kubernetes/base/
+```
+
+The Kubernetes deployment includes:
+- Service configuration for load balancing
+- Ingress configuration for external access
+- Health check endpoints
+- Resource limits and requests

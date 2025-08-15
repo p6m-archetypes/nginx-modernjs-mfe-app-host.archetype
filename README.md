@@ -1,41 +1,50 @@
-# TypeScript Modern.js MFE Shell Archetype
+# Nginx Modern.js MFE Host Archetype
 
-![Latest Release](https://img.shields.io/github/v/release/p6m-archetypes/typescript-modernjs-mfe-shell.archetype?style=flat-square&label=Latest%20Release&color=blue)
+![Latest Release](https://img.shields.io/github/v/release/p6m-archetypes/nginx-modernjs-mfe-app-host.archetype?style=flat-square&label=Latest%20Release&color=blue)
 
-This is an [Archetect](https://archetect.github.io/) archetype for building Modern.js shell applications for micro frontend (MFE) architectures that run on Kubernetes.
+This is an [Archetect](https://archetect.github.io/) archetype for building nginx-based micro frontend (MFE) host applications that serve static Modern.js applications on Kubernetes.
 
 ## Features
 
-- **Modern.js Framework**: Built on the latest Modern.js framework with Rspack for optimal performance
-- **Micro Frontend Shell**: Designed as a shell application to host and orchestrate micro frontends using Module Federation
-- **TypeScript**: Full TypeScript support for type safety and enhanced developer experience
-- **Docker Ready**: Includes optimized multi-stage Dockerfile for containerized deployments
-- **Kubernetes Compatible**: Configured for seamless deployment on Kubernetes clusters
-- **Biome**: Pre-configured code quality, formatting, and linting with Biome
-- **Modern Routing**: Uses Modern.js file-based routing with the `pages/` directory structure
-- **Module Federation**: Pre-configured for dynamic micro frontend loading and orchestration
-- **pnpm Support**: Optimized for pnpm package management
+- **Nginx-Based Host**: Lightweight nginx server optimized for serving static micro frontend applications
+- **CORS Ready**: Pre-configured CORS headers for seamless micro frontend integration
+- **Static File Serving**: Optimized nginx configuration for serving built Modern.js applications
+- **Docker Ready**: Includes optimized multi-stage Dockerfile with nginx:alpine for minimal container size
+- **Kubernetes Compatible**: Configured for seamless deployment on Kubernetes clusters with proper health checks
+- **Apps Directory**: Dedicated `/apps/` directory structure for hosting multiple micro frontend builds
+- **Production Optimized**: Nginx configuration tuned for production performance and caching
+- **Zero Dependencies**: No Node.js runtime dependencies - pure static file serving
 
 ## Usage
 
 Generate a new project from this archetype:
 
 ```sh
-archetect render git@github.com:p6m-archetypes/typescript-modernjs-mfe-shell.archetype.git#v1
+archetect render git@github.com:p6m-archetypes/nginx-modernjs-mfe-app-host.archetype.git
 ```
 
-This creates a Modern.js shell application ready to:
-- Host multiple micro frontend applications
-- Use Module Federation for dynamic loading
-- Deploy to Kubernetes clusters
-- Run in Docker containers
+This creates an nginx-based MFE host ready to:
+- Serve multiple pre-built micro frontend applications
+- Handle CORS requests for cross-origin micro frontend communication
+- Deploy to Kubernetes clusters with minimal resource footprint
+- Run as a lightweight Docker container
 
 ## Getting Started
 
 After generating your project:
 
-1. Install dependencies: `pnpm install`
-2. Start development server: `pnpm dev`
-3. Access your shell at: `http://localhost:8080`
-4. Register micro frontends in `module-federation.config.ts` and `src/routing/router.tsx`
-5. Build for production: `pnpm build`
+1. **Build the Docker image**: `docker build -t your-mfe-host .`
+2. **Run the container**: `docker run -p 80:80 your-mfe-host`
+3. **Access your host**: `http://localhost/apps/`
+4. **Deploy micro frontends**: Place built applications in the `/apps/` directory
+5. **Deploy to Kubernetes**: Use the included manifests in `.platform/kubernetes/`
+
+## Deploying Micro Frontends
+
+To add a micro frontend application:
+
+1. Build your Modern.js application: `pnpm build`
+2. Copy the `dist/` output to the host's `apps/your-app-name/` directory
+3. Access your app at: `http://your-host/apps/your-app-name/`
+
+The nginx configuration automatically serves all content with proper CORS headers for micro frontend integration.
