@@ -1,0 +1,9 @@
+---
+description: "Nginx Modern.js Micro Frontend Host"
+authors: ["Josh Rothe <josh@ybor.ai>"]
+languages: ["Html", "JavaScript"]
+frameworks: ["Modern.js", "Module Federation"]
+tags: ["modern-js", "react", "static", "frontend", "mfe", "module-federation", "host"]
+
+requires:
+  archetect: "2.0.0"

@@ -1,0 +1,8 @@
+# Answer file for nginx-modernjs-mfe-app-host.archetype
+# Configuration for testing the nginx MFE host archetype
+
+organization-name: "test.example"
+project-title: "Test Modern.js Application"
+project-prefix: "test-modernjs"
+apps-dir: "apps"
+port: "80"
