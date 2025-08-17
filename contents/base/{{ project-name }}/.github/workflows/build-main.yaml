@@ -19,6 +19,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup pnpm
+        uses: p6m-actions/js-pnpm-setup@v1
+        with:
+          node-version: "20"
+
       - name: Cut Tag
         id: cut-tag
         uses: p6m-actions/js-pnpm-cut-tag@v1
