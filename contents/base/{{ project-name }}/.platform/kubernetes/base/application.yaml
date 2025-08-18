@@ -16,6 +16,7 @@ spec:
     ports:
       - protocol: http
         port: {{ port }}
+    readOnlyRootFilesystem: false
     readinessProbe:
       port: {{ port }}
       path: /
